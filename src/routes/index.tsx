@@ -44,6 +44,7 @@ function Home() {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const messagesContainerRef = useRef<HTMLDivElement>(null)
   const [pendingMessage, setPendingMessage] = useState<Message | null>(null)
+  const [error, setError] = useState<string | null>(null);
 
   const scrollToBottom = () => {
     if (messagesContainerRef.current) {
@@ -64,6 +65,7 @@ function Home() {
     const currentInput = input
     setInput('') // Clear input early for better UX
     setLoading(true)
+    setError(null)
 
     try {
       let conversationId = currentConversationId
@@ -149,6 +151,13 @@ function Home() {
       }
       if (currentConversationId) {
         addMessage(currentConversationId, errorMessage)
+      }
+      else {
+        if (error instanceof Error) {
+          setError(error.message)
+        } else {
+          setError('An unknown error occurred.')
+        }
       }
     } finally {
       setLoading(false)
@@ -261,6 +270,9 @@ function Home() {
 
       {/* Main Content */}
       <div className="flex flex-col flex-1">
+        {error && (
+          <p className="w-full max-w-3xl p-4 mx-auto font-bold text-orange-500">{error}</p>
+        )}
         {currentConversationId ? (
           <>
             {/* Messages */}

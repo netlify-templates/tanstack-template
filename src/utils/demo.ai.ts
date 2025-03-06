@@ -59,8 +59,13 @@ export const genAIResponse = createServerFn({ method: 'GET', response: 'raw' })
   )
   // .middleware([loggingMiddleware])
   .handler(async ({ data }) => {
+    if (!process.env.ANTHROPIC_API_KEY) {
+      throw new Error(
+        'Missing API key: Please set ANTHROPIC_API_KEY in your environment variables.'
+      )
+    }
     const anthropic = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY || '',
+      apiKey: process.env.ANTHROPIC_API_KEY,
     })
 
     // Filter out error messages and empty messages
