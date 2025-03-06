@@ -28,7 +28,7 @@ export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center" onClick={(e) => {
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm" onClick={(e) => {
       if (e.target === e.currentTarget) handleClose()
     }}>
       <div className="bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
@@ -62,19 +62,19 @@ export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
               </div>
 
               {isAddingPrompt && (
-                <div className="space-y-3 mb-4 p-3 bg-gray-700/50 rounded-lg">
+                <div className="p-3 mb-4 space-y-3 rounded-lg bg-gray-700/50">
                   <input
                     type="text"
                     value={promptForm.name}
                     onChange={(e) => setPromptForm(prev => ({ ...prev, name: e.target.value }))}
                     placeholder="Prompt name..."
-                    className="w-full px-3 py-2 text-sm text-white bg-gray-700 rounded-lg border border-gray-600 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+                    className="w-full px-3 py-2 text-sm text-white bg-gray-700 border border-gray-600 rounded-lg focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
                   />
                   <textarea
                     value={promptForm.content}
                     onChange={(e) => setPromptForm(prev => ({ ...prev, content: e.target.value }))}
                     placeholder="Enter prompt content..."
-                    className="w-full h-32 px-3 py-2 text-sm text-white bg-gray-700 rounded-lg border border-gray-600 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+                    className="w-full h-32 px-3 py-2 text-sm text-white bg-gray-700 border border-gray-600 rounded-lg focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
                   />
                   <div className="flex justify-end gap-2">
                     <button
@@ -95,7 +95,7 @@ export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
 
               <div className="space-y-2">
                 {prompts.map((prompt) => (
-                  <div key={prompt.id} className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg">
+                  <div key={prompt.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-700/50">
                     <div className="flex-1 min-w-0 mr-4">
                       <h4 className="text-sm font-medium text-white truncate">{prompt.name}</h4>
                       <p className="text-xs text-gray-400 truncate">{prompt.content}</p>
@@ -127,7 +127,7 @@ export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
 
           </div>
 
-          <div className="mt-6 flex justify-end gap-3">
+          <div className="flex justify-end gap-3 mt-6">
             <button
               onClick={handleClose}
               className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white focus:outline-none"
@@ -136,7 +136,7 @@ export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
             </button>
             <button
               onClick={handleClose}
-              className="px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-orange-500 to-red-600 rounded-lg hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-orange-500"
+              className="px-4 py-2 text-sm font-medium text-white rounded-lg bg-gradient-to-r from-orange-500 to-red-600 hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-orange-500"
             >
               Close
             </button>

@@ -76,7 +76,10 @@ export const genAIResponse = createServerFn({ method: 'GET', response: 'raw' })
       }))
 
     if (formattedMessages.length === 0) {
-      return { error: 'No valid messages to send' }
+      return new Response(JSON.stringify({ error: 'No valid messages to send' }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
 
     const systemPrompt = data.systemPrompt?.enabled
@@ -101,12 +104,13 @@ export const genAIResponse = createServerFn({ method: 'GET', response: 'raw' })
       return new Response(response.toReadableStream())
     } catch (error) {
       console.error('Error in genAIResponse:', error)
-      if (error instanceof Error && error.message.includes('rate limit')) {
-        return { error: 'Rate limit exceeded. Please try again in a moment.' }
-      }
-      return {
-        error:
-          error instanceof Error ? error.message : 'Failed to get AI response',
-      }
+      const errorMessage = error instanceof Error && error.message.includes('rate limit')
+        ? 'Rate limit exceeded. Please try again in a moment.'
+        : error instanceof Error ? error.message : 'Failed to get AI response'
+      
+      return new Response(JSON.stringify({ error: errorMessage }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      })
     }
   })
