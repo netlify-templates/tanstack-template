@@ -59,13 +59,20 @@ export const genAIResponse = createServerFn({ method: 'GET', response: 'raw' })
   )
   // .middleware([loggingMiddleware])
   .handler(async ({ data }) => {
-    if (!process.env.ANTHROPIC_API_KEY) {
+    // Check for API key in environment variables
+    const apiKey = process.env.ANTHROPIC_API_KEY || import.meta.env.VITE_ANTHROPIC_API_KEY
+
+    if (!apiKey) {
       throw new Error(
-        'Missing API key: Please set ANTHROPIC_API_KEY in your environment variables.'
+        'Missing API key: Please set ANTHROPIC_API_KEY in your environment variables or VITE_ANTHROPIC_API_KEY in your .env file.'
       )
     }
+    
+    // Create Anthropic client with proper configuration
     const anthropic = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY,
+      apiKey,
+      // Add proper timeout to avoid connection issues
+      timeout: 30000 // 30 seconds timeout
     })
 
     // Filter out error messages and empty messages
@@ -109,12 +116,30 @@ export const genAIResponse = createServerFn({ method: 'GET', response: 'raw' })
       return new Response(response.toReadableStream())
     } catch (error) {
       console.error('Error in genAIResponse:', error)
-      const errorMessage = error instanceof Error && error.message.includes('rate limit')
-        ? 'Rate limit exceeded. Please try again in a moment.'
-        : error instanceof Error ? error.message : 'Failed to get AI response'
       
-      return new Response(JSON.stringify({ error: errorMessage }), {
-        status: 500,
+      // Enhanced error handling with more specific messages
+      let errorMessage = 'Failed to get AI response'
+      let statusCode = 500
+      
+      if (error instanceof Error) {
+        if (error.message.includes('rate limit')) {
+          errorMessage = 'Rate limit exceeded. Please try again in a moment.'
+        } else if (error.message.includes('Connection error') || error.name === 'APIConnectionError') {
+          errorMessage = 'Connection to Anthropic API failed. Please check your internet connection and API key.'
+          statusCode = 503 // Service Unavailable
+        } else if (error.message.includes('authentication')) {
+          errorMessage = 'Authentication failed. Please check your Anthropic API key.'
+          statusCode = 401 // Unauthorized
+        } else {
+          errorMessage = error.message
+        }
+      }
+      
+      return new Response(JSON.stringify({ 
+        error: errorMessage,
+        details: error instanceof Error ? error.name : undefined
+      }), {
+        status: statusCode,
         headers: { 'Content-Type': 'application/json' },
       })
     }

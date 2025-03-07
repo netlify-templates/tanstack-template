@@ -31,6 +31,26 @@ npm run test
 
 This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
 
+## Error Monitoring
+
+This project uses [Sentry](https://sentry.io) for error monitoring and performance tracking. Sentry integration is optional and the project will run normally without Sentry configuration.
+
+To set up Sentry:
+
+1. Create a `.env` file by copying `.env.example`
+2. Add your Sentry DSN and Auth Token to the `.env` file
+
+```bash
+cp .env.example .env
+```
+
+Then edit your `.env` file with your Sentry credentials. If the Sentry environment variables are not defined, the application will run without error monitoring.
+
+```
+# .env file
+VITE_SENTRY_DSN=your-sentry-dsn-here
+SENTRY_AUTH_TOKEN=your-sentry-auth-token-here
+```
 
 
 
@@ -41,7 +61,7 @@ Am example chat application built with TanStack Start, TanStack Store, and Claud
 ## .env Updates
 
 ```env
-ANTHROPIC_API_KEY=your_anthropic_api_key
+VITE_ANTHROPIC_API_KEY=your_anthropic_api_key
 ```
 
 ## ✨ Features
@@ -322,10 +342,6 @@ Once we've created the derived store we can use it in the `App` component just l
 
 You can find out everything you need to know on how to use TanStack Store in the [TanStack Store documentation](https://tanstack.com/store/latest).
 
-# Demo files
-
-Files prefixed with `demo` can be safely deleted. They are there to provide a starting point for you to play around with the features you've installed.
-
-# Learn More
+## Learn More
 
 You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
