@@ -31,6 +31,26 @@ npm run test
 
 This project uses [Tailwind CSS](https://tailwindcss.com/) for styling.
 
+## Error Monitoring
+
+This project uses [Sentry](https://sentry.io) for error monitoring and performance tracking. Sentry integration is optional and the project will run normally without Sentry configuration.
+
+To set up Sentry:
+
+1. Create a `.env` file by copying `.env.example`
+2. Add your Sentry DSN and Auth Token to the `.env` file
+
+```bash
+cp .env.example .env
+```
+
+Then edit your `.env` file with your Sentry credentials. If the Sentry environment variables are not defined, the application will run without error monitoring.
+
+```
+# .env file
+SENTRY_DSN=your-sentry-dsn-here
+SENTRY_AUTH_TOKEN=your-sentry-auth-token-here
+```
 
 
 
