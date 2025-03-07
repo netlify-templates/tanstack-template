@@ -2,13 +2,13 @@ import * as Sentry from '@sentry/react';
 
 export function initSentry() {
   // Skip Sentry initialization if DSN is not defined
-  if (!process.env.SENTRY_DSN) {
+  if (!import.meta.env.VITE_SENTRY_DSN) {
     console.log('Sentry DSN not found. Skipping Sentry initialization.');
     return;
   }
 
   Sentry.init({
-    dsn: process.env.SENTRY_DSN,
+    dsn: import.meta.env.VITE_SENTRY_DSN,
     integrations: [
       Sentry.browserTracingIntegration(),
       Sentry.replayIntegration({
@@ -17,10 +17,10 @@ export function initSentry() {
       }),
     ],
     // Performance Monitoring
-    tracesSampleRate: process.env.NODE_ENV === 'production' ? 0.1 : 1.0,
+    tracesSampleRate: import.meta.env.PROD ? 0.1 : 1.0,
     // Session Replay
     replaysSessionSampleRate: 0.1,
     replaysOnErrorSampleRate: 1.0,
-    environment: process.env.NODE_ENV,
+    environment: import.meta.env.MODE,
   });
 }
