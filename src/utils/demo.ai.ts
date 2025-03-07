@@ -64,7 +64,7 @@ export const genAIResponse = createServerFn({ method: 'GET', response: 'raw' })
 
     if (!apiKey) {
       throw new Error(
-        'Missing API key: Please set ANTHROPIC_API_KEY in your environment variables or VITE_ANTHROPIC_API_KEY in your .env file.'
+        'Missing API key: Please set VITE_ANTHROPIC_API_KEY in your environment variables or VITE_ANTHROPIC_API_KEY in your .env file.'
       )
     }
     
