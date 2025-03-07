@@ -117,7 +117,7 @@ export const genAIResponse = createServerFn({ method: 'GET', response: 'raw' })
     } catch (error) {
       console.error('Error in genAIResponse:', error)
       
-      // Enhanced error handling with more specific messages
+      // Error handling with specific messages
       let errorMessage = 'Failed to get AI response'
       let statusCode = 500
       
