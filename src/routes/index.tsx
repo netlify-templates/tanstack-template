@@ -14,9 +14,10 @@ import rehypeSanitize from 'rehype-sanitize'
 import rehypeHighlight from 'rehype-highlight'
 
 import { SettingsDialog } from '../components/demo.SettingsDialog'
-import { useAppState } from '../store/demo.hooks'
+import { useConversations } from '../store/demo.hooks'
 import { store } from '../store/demo.store'
 import { genAIResponse } from '../utils/demo.ai'
+import { useAppState } from '../store/demo.hooks'
 
 import type { Message } from '../utils/demo.ai'
 
@@ -24,18 +25,16 @@ function Home() {
   const {
     conversations,
     currentConversationId,
-    isLoading,
+    currentConversation,
     setCurrentConversationId,
-    addConversation,
-    deleteConversation,
+    createNewConversation,
     updateConversationTitle,
+    deleteConversation,
     addMessage,
-    setLoading,
-    getCurrentConversation,
-    getActivePrompt,
-  } = useAppState()
+  } = useConversations()
+  
+  const { isLoading, setLoading, getActivePrompt } = useAppState()
 
-  const currentConversation = getCurrentConversation(store.state)
   const messages = currentConversation?.messages || []
 
   // Local state
@@ -73,13 +72,19 @@ function Home() {
 
       // If no current conversation, create one
       if (!conversationId) {
-        conversationId = Date.now().toString()
-        const newConversation = {
-          id: conversationId,
-          title: currentInput.trim().slice(0, 30),
-          messages: [],
+        // Create a new conversation with Convex
+        await createNewConversation()
+        
+        // Get the newly created conversation ID
+        conversationId = currentConversationId
+        
+        // If still no ID, something went wrong
+        if (!conversationId) {
+          throw new Error('Failed to create conversation')
         }
-        addConversation(newConversation)
+        
+        // Update the title with the first message
+        updateConversationTitle(conversationId, currentInput.trim().slice(0, 30))
       }
 
       const userMessage: Message = {
@@ -88,8 +93,8 @@ function Home() {
         content: currentInput.trim(),
       }
 
-      // Add user message
-      addMessage(conversationId, userMessage)
+      // Add user message to Convex
+      await addMessage(conversationId, userMessage)
 
       // Get active prompt
       const activePrompt = getActivePrompt(store.state)
@@ -141,7 +146,8 @@ function Home() {
 
       setPendingMessage(null)
       if (newMessage.content.trim()) {
-        addMessage(conversationId, newMessage)
+        // Add AI message to Convex
+        await addMessage(conversationId, newMessage)
       }
     } catch (error) {
       console.error('Error:', error)
@@ -151,7 +157,7 @@ function Home() {
         content: 'Sorry, I encountered an error processing your request.',
       }
       if (currentConversationId) {
-        addMessage(currentConversationId, errorMessage)
+        await addMessage(currentConversationId, errorMessage)
       }
       else {
         if (error instanceof Error) {
@@ -166,20 +172,15 @@ function Home() {
   }
 
   const handleNewChat = () => {
-    const newConversation = {
-      id: Date.now().toString(),
-      title: 'New Chat',
-      messages: [],
-    }
-    addConversation(newConversation)
+    createNewConversation()
   }
 
-  const handleDeleteChat = (id: string) => {
-    deleteConversation(id)
+  const handleDeleteChat = async (id: string) => {
+    await deleteConversation(id)
   }
 
-  const handleUpdateChatTitle = (id: string, title: string) => {
-    updateConversationTitle(id, title)
+  const handleUpdateChatTitle = async (id: string, title: string) => {
+    await updateConversationTitle(id, title)
     setEditingChatId(null)
     setEditingTitle('')
   }
