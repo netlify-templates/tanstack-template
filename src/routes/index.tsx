@@ -15,7 +15,7 @@ import rehypeHighlight from 'rehype-highlight'
 
 import { SettingsDialog } from '../components/demo.SettingsDialog'
 import { useConversations } from '../store/demo.hooks'
-import { store } from '../store/demo.store'
+import { store, actions } from '../store/demo.store'
 import { genAIResponse } from '../utils/demo.ai'
 import { useAppState } from '../store/demo.hooks'
 
@@ -72,82 +72,62 @@ function Home() {
 
       // If no current conversation, create one
       if (!conversationId) {
-        // Create a new conversation with Convex
-        await createNewConversation()
-        
-        // Get the newly created conversation ID
-        conversationId = currentConversationId
-        
-        // If still no ID, something went wrong
-        if (!conversationId) {
+        try {
+          // Create a temporary local conversation for immediate feedback
+          const tempId = Date.now().toString()
+          const tempConversation = {
+            id: tempId,
+            title: currentInput.trim().slice(0, 30),
+            messages: [],
+          }
+          
+          // Add to local state first
+          actions.addConversation(tempConversation)
+          conversationId = tempId
+          
+          // User message to be added
+          const userMessage: Message = {
+            id: Date.now().toString(),
+            role: 'user' as const,
+            content: currentInput.trim(),
+          }
+          
+          // Add user message to local state
+          actions.addMessage(conversationId, userMessage)
+          
+          // Process the message with AI
+          await processAIResponse(conversationId, userMessage)
+          
+          // After everything is done, create the conversation in Convex
+          // This will happen in the background and sync later
+          createNewConversation().then(async () => {
+            if (currentConversationId && currentConversationId !== tempId) {
+              // If we have a new Convex ID, update the title
+              await updateConversationTitle(
+                currentConversationId, 
+                currentInput.trim().slice(0, 30)
+              )
+            }
+          }).catch(e => {
+            console.error("Background Convex sync failed:", e)
+          })
+        } catch (error) {
+          console.error("Error in conversation creation:", error)
           throw new Error('Failed to create conversation')
         }
+      } else {
+        // We already have a conversation ID, proceed normally
+        const userMessage: Message = {
+          id: Date.now().toString(),
+          role: 'user' as const,
+          content: currentInput.trim(),
+        }
         
-        // Update the title with the first message
-        updateConversationTitle(conversationId, currentInput.trim().slice(0, 30))
-      }
-
-      const userMessage: Message = {
-        id: Date.now().toString(),
-        role: 'user' as const,
-        content: currentInput.trim(),
-      }
-
-      // Add user message to Convex
-      await addMessage(conversationId, userMessage)
-
-      // Get active prompt
-      const activePrompt = getActivePrompt(store.state)
-      let systemPrompt
-      if (activePrompt) {
-        systemPrompt = {
-          value: activePrompt.content,
-          enabled: true,
-        }
-      }
-
-      // Get AI response
-      const response = await genAIResponse({
-        data: {
-          messages: [...messages, userMessage],
-          systemPrompt,
-        },
-      })
-
-      const reader = response.body?.getReader()
-      if (!reader) {
-        throw new Error('No reader found in response')
-      }
-
-      const decoder = new TextDecoder()
-
-      let done = false
-      let newMessage = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant' as const,
-        content: '',
-      }
-      while (!done) {
-        const out = await reader.read()
-        done = out.done
-        if (!done) {
-          try {
-            const json = JSON.parse(decoder.decode(out.value))
-            if (json.type === 'content_block_delta') {
-              newMessage = {
-                ...newMessage,
-                content: newMessage.content + json.delta.text,
-              }
-              setPendingMessage(newMessage)
-            }
-          } catch (e) {}
-        }
-      }
-
-      setPendingMessage(null)
-      if (newMessage.content.trim()) {
-        // Add AI message to Convex
-        await addMessage(conversationId, newMessage)
+        // Add user message
+        await addMessage(conversationId, userMessage)
+        
+        // Process with AI
+        await processAIResponse(conversationId, userMessage)
       }
     } catch (error) {
       console.error('Error:', error)
@@ -168,6 +148,63 @@ function Home() {
       }
     } finally {
       setLoading(false)
+    }
+  }
+
+  // Helper function to process AI response
+  const processAIResponse = async (conversationId: string, userMessage: Message) => {
+    // Get active prompt
+    const activePrompt = getActivePrompt(store.state)
+    let systemPrompt
+    if (activePrompt) {
+      systemPrompt = {
+        value: activePrompt.content,
+        enabled: true,
+      }
+    }
+
+    // Get AI response
+    const response = await genAIResponse({
+      data: {
+        messages: [...messages, userMessage],
+        systemPrompt,
+      },
+    })
+
+    const reader = response.body?.getReader()
+    if (!reader) {
+      throw new Error('No reader found in response')
+    }
+
+    const decoder = new TextDecoder()
+
+    let done = false
+    let newMessage = {
+      id: (Date.now() + 1).toString(),
+      role: 'assistant' as const,
+      content: '',
+    }
+    while (!done) {
+      const out = await reader.read()
+      done = out.done
+      if (!done) {
+        try {
+          const json = JSON.parse(decoder.decode(out.value))
+          if (json.type === 'content_block_delta') {
+            newMessage = {
+              ...newMessage,
+              content: newMessage.content + json.delta.text,
+            }
+            setPendingMessage(newMessage)
+          }
+        } catch (e) {}
+      }
+    }
+
+    setPendingMessage(null)
+    if (newMessage.content.trim()) {
+      // Add AI message
+      await addMessage(conversationId, newMessage)
     }
   }
 
