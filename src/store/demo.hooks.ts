@@ -70,11 +70,11 @@ export function useConversations() {
       actions.setCurrentConversationId(id);
     },
     
-    createNewConversation: async () => {
+    createNewConversation: async (title: string = 'New Conversation') => {
       const id = uuidv4();
       const newConversation: Conversation = {
         id,
-        title: 'New Conversation',
+        title,
         messages: [],
       };
       
@@ -84,15 +84,18 @@ export function useConversations() {
       // Then create in Convex database
       try {
         const convexId = await createConversation({
-          title: 'New Conversation',
+          title,
           messages: [],
         });
         
         // Update the local conversation with the Convex ID
         actions.updateConversationId(id, convexId);
         actions.setCurrentConversationId(convexId);
+        
+        return convexId;
       } catch (error) {
         console.error('Failed to create conversation in Convex:', error);
+        return null;
       }
     },
     

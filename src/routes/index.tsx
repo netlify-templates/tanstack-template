@@ -67,68 +67,68 @@ function Home() {
     setLoading(true)
     setError(null)
 
+    // Create a title from the first three words of the input
+    const createTitleFromInput = (text: string) => {
+      const words = text.trim().split(/\s+/)
+      const firstThreeWords = words.slice(0, 3).join(' ')
+      return firstThreeWords + (words.length > 3 ? '...' : '')
+    }
+    
+    const conversationTitle = createTitleFromInput(currentInput)
+
     try {
+      // Create the user message object
+      const userMessage: Message = {
+        id: Date.now().toString(),
+        role: 'user' as const,
+        content: currentInput.trim(),
+      }
+      
       let conversationId = currentConversationId
 
-      // If no current conversation, create one
+      // If no current conversation, create one in Convex first
       if (!conversationId) {
         try {
-          // Create a temporary local conversation for immediate feedback
-          const tempId = Date.now().toString()
-          const tempConversation = {
-            id: tempId,
-            title: currentInput.trim().slice(0, 30),
-            messages: [],
-          }
+          console.log('Creating new Convex conversation with title:', conversationTitle)
+          // Create a new conversation with our title
+          const convexId = await createNewConversation(conversationTitle)
           
-          // Add to local state first
-          actions.addConversation(tempConversation)
-          conversationId = tempId
-          
-          // User message to be added
-          const userMessage: Message = {
-            id: Date.now().toString(),
-            role: 'user' as const,
-            content: currentInput.trim(),
-          }
-          
-          // Add user message to local state
-          actions.addMessage(conversationId, userMessage)
-          
-          // Process the message with AI
-          await processAIResponse(conversationId, userMessage)
-          
-          // After everything is done, create the conversation in Convex
-          // This will happen in the background and sync later
-          createNewConversation().then(async () => {
-            if (currentConversationId && currentConversationId !== tempId) {
-              // If we have a new Convex ID, update the title
-              await updateConversationTitle(
-                currentConversationId, 
-                currentInput.trim().slice(0, 30)
-              )
+          if (convexId) {
+            console.log('Successfully created Convex conversation with ID:', convexId)
+            conversationId = convexId
+            
+            // Add user message directly to Convex
+            console.log('Adding user message to Convex conversation:', userMessage.content)
+            await addMessage(conversationId, userMessage)
+          } else {
+            console.warn('Failed to create Convex conversation, falling back to local')
+            // Fallback to local storage if Convex creation failed
+            const tempId = Date.now().toString()
+            const tempConversation = {
+              id: tempId,
+              title: conversationTitle,
+              messages: [],
             }
-          }).catch(e => {
-            console.error("Background Convex sync failed:", e)
-          })
+            
+            actions.addConversation(tempConversation)
+            conversationId = tempId
+            
+            // Add user message to local state
+            actions.addMessage(conversationId, userMessage)
+          }
         } catch (error) {
-          console.error("Error in conversation creation:", error)
+          console.error('Error creating conversation:', error)
           throw new Error('Failed to create conversation')
         }
       } else {
-        // We already have a conversation ID, proceed normally
-        const userMessage: Message = {
-          id: Date.now().toString(),
-          role: 'user' as const,
-          content: currentInput.trim(),
-        }
-        
-        // Add user message
+        // We already have a conversation ID, add message directly to Convex
+        console.log('Adding user message to existing conversation:', conversationId)
         await addMessage(conversationId, userMessage)
-        
-        // Process with AI
-        await processAIResponse(conversationId, userMessage)
       }
+      
+      // Process with AI after message is stored
+      await processAIResponse(conversationId, userMessage)
+      
     } catch (error) {
       console.error('Error:', error)
       const errorMessage: Message = {
@@ -153,58 +153,72 @@ function Home() {
 
   // Helper function to process AI response
   const processAIResponse = async (conversationId: string, userMessage: Message) => {
-    // Get active prompt
-    const activePrompt = getActivePrompt(store.state)
-    let systemPrompt
-    if (activePrompt) {
-      systemPrompt = {
-        value: activePrompt.content,
-        enabled: true,
+    try {
+      // Get active prompt
+      const activePrompt = getActivePrompt(store.state)
+      let systemPrompt
+      if (activePrompt) {
+        systemPrompt = {
+          value: activePrompt.content,
+          enabled: true,
+        }
       }
-    }
 
-    // Get AI response
-    const response = await genAIResponse({
-      data: {
-        messages: [...messages, userMessage],
-        systemPrompt,
-      },
-    })
+      // Get AI response
+      const response = await genAIResponse({
+        data: {
+          messages: [...messages, userMessage],
+          systemPrompt,
+        },
+      })
 
-    const reader = response.body?.getReader()
-    if (!reader) {
-      throw new Error('No reader found in response')
-    }
+      const reader = response.body?.getReader()
+      if (!reader) {
+        throw new Error('No reader found in response')
+      }
 
-    const decoder = new TextDecoder()
+      const decoder = new TextDecoder()
 
-    let done = false
-    let newMessage = {
-      id: (Date.now() + 1).toString(),
-      role: 'assistant' as const,
-      content: '',
-    }
-    while (!done) {
-      const out = await reader.read()
-      done = out.done
-      if (!done) {
-        try {
-          const json = JSON.parse(decoder.decode(out.value))
-          if (json.type === 'content_block_delta') {
-            newMessage = {
-              ...newMessage,
-              content: newMessage.content + json.delta.text,
+      let done = false
+      let newMessage = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant' as const,
+        content: '',
+      }
+      while (!done) {
+        const out = await reader.read()
+        done = out.done
+        if (!done) {
+          try {
+            const json = JSON.parse(decoder.decode(out.value))
+            if (json.type === 'content_block_delta') {
+              newMessage = {
+                ...newMessage,
+                content: newMessage.content + json.delta.text,
+              }
+              setPendingMessage(newMessage)
             }
-            setPendingMessage(newMessage)
+          } catch (e) {
+            console.error('Error parsing streaming response:', e)
           }
-        } catch (e) {}
+        }
       }
-    }
 
-    setPendingMessage(null)
-    if (newMessage.content.trim()) {
-      // Add AI message
-      await addMessage(conversationId, newMessage)
+      setPendingMessage(null)
+      if (newMessage.content.trim()) {
+        // Add AI message to Convex
+        console.log('Adding AI response to conversation:', conversationId)
+        await addMessage(conversationId, newMessage)
+      }
+    } catch (error) {
+      console.error('Error in AI response:', error)
+      // Add an error message to the conversation
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant' as const,
+        content: 'Sorry, I encountered an error generating a response.',
+      }
+      await addMessage(conversationId, errorMessage)
     }
   }
 
