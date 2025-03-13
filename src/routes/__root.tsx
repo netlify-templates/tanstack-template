@@ -5,6 +5,7 @@ import {
   Scripts,
 } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/router-devtools'
+import { ConvexClientProvider } from '../convex'
 
 import appCss from '../styles.css?url'
 
@@ -45,7 +46,9 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        {children}
+        <ConvexClientProvider>
+          {children}
+        </ConvexClientProvider>
         <Scripts />
       </body>
     </html>

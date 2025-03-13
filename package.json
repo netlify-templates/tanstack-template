@@ -20,6 +20,8 @@
     "@tanstack/router-devtools": "^1.112.0",
     "@tanstack/router-plugin": "^1.112.0",
     "@tanstack/store": "^0.7.0",
+    "@types/uuid": "^10.0.0",
+    "convex": "^1.20.0",
     "highlight.js": "^11.11.1",
     "lucide-react": "^0.475.0",
     "postcss": "^8.5.2",
@@ -30,6 +32,7 @@
     "rehype-raw": "^7.0.0",
     "rehype-sanitize": "^6.0.0",
     "tailwindcss": "^4.0.6",
+    "uuid": "^11.1.0",
     "vinxi": "^0.5.3",
     "vite-tsconfig-paths": "^5.1.4"
   },

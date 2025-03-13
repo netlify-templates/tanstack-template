@@ -88,6 +88,16 @@ export const actions = {
     }))
   },
 
+  updateConversationId: (oldId: string, newId: string) => {
+    store.setState(state => ({
+      ...state,
+      conversations: state.conversations.map(conv =>
+        conv.id === oldId ? { ...conv, id: newId } : conv
+      ),
+      currentConversationId: state.currentConversationId === oldId ? newId : state.currentConversationId
+    }))
+  },
+
   updateConversationTitle: (id: string, title: string) => {
     store.setState(state => ({
       ...state,

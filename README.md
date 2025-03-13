@@ -34,6 +34,7 @@ Clicking this button will create a new repo for you that looks exactly like this
 - **Frontend Framework**: React 19 with TanStack Start
 - **Routing**: TanStack Router
 - **State Management**: TanStack Store
+- **Database**: Convex (optional)
 - **Styling**: Tailwind CSS 4
 - **AI Integration**: Anthropic's Claude API
 - **Build Tool**: Vite 6 with Vinxi
@@ -43,6 +44,7 @@ Clicking this button will create a new repo for you that looks exactly like this
 - [Node.js](https://nodejs.org/) v20.9+
 - (optional) [nvm](https://github.com/nvm-sh/nvm) for Node version management
 - [Anthropic Claude API](https://www.anthropic.com/api)
+- (optional) [Convex Account](https://dashboard.convex.dev/signup) for database storage
 
 ## Getting Started
 
@@ -92,13 +94,29 @@ VITE_SENTRY_DSN=your-sentry-dsn-here
 SENTRY_AUTH_TOKEN=your-sentry-auth-token-here
 ```
 
-## Add Anthropic API Key to .env file
+## Environment Configuration
+
+### Anthropic API Key
 
 You can generate and manage your Anthropic API keys through the [Anthropic Console](https://console.anthropic.com/login).
 
 ```
 # .env file
 VITE_ANTHROPIC_API_KEY=your_anthropic_api_key
+```
+
+### Convex Configuration (Optional)
+
+For persistent storage of conversations:
+
+1. Create a Convex account at [dashboard.convex.dev](https://dashboard.convex.dev/signup)
+2. Create a new project in the Convex dashboard
+3. Run `npx convex dev` in your project directory to set up Convex
+4. Add your Convex deployment URL to the `.env` file
+
+```
+# .env file
+VITE_CONVEX_URL=your_convex_deployment_url
 ```
 
 ## Routing
@@ -197,7 +215,7 @@ Loaders simplify your data fetching logic dramatically. Check out more informati
 
 ## State Management
 
-This project uses TanStack Store for state management. The store files are located in the `src/store` directory.
+This project uses TanStack Store for local state management. The store files are located in the `src/store` directory. For persistent storage, the project can optionally use Convex as a backend database.
 
 Here's a simple example of how to use TanStack Store:
 
