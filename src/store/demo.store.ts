@@ -62,13 +62,25 @@ export const actions = {
   },
 
   setPromptActive: (id: string, shouldActivate: boolean) => {
-    store.setState(state => ({
-      ...state,
-      prompts: state.prompts.map(p => ({
-        ...p,
-        is_active: p.id === id ? shouldActivate : false
-      }))
-    }))
+    store.setState(state => {
+      if (shouldActivate) {
+        return {
+          ...state,
+          prompts: state.prompts.map(p => ({
+            ...p,
+            is_active: p.id === id ? true : false
+          }))
+        };
+      } else {
+        return {
+          ...state,
+          prompts: state.prompts.map(p => ({
+            ...p,
+            is_active: p.id === id ? false : p.is_active
+          }))
+        };
+      }
+    });
   },
 
   // Chat actions
