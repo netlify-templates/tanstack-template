@@ -1,10 +1,10 @@
 import { useStore } from '@tanstack/react-store';
 import { v4 as uuidv4 } from 'uuid';
-import { actions, selectors, store, type Conversation } from './demo.store';
+import { actions, selectors, store, type Conversation } from './store';
 import { useMutation, useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
 import type { Id } from '../../convex/_generated/dataModel';
-import type { Message } from '../utils/demo.ai';
+import type { Message } from '../utils/ai';
 import { useEffect } from 'react';
 
 // Check if Convex URL is provided
@@ -159,4 +159,4 @@ export function useConversations() {
       }
     },
   };
-}
+} 

@@ -1,5 +1,5 @@
 import { Store } from '@tanstack/store'
-import type { Message } from '../utils/demo.ai'
+import type { Message } from '../utils/ai'
 
 // Types
 export interface Prompt {

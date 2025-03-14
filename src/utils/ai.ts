@@ -143,4 +143,4 @@ export const genAIResponse = createServerFn({ method: 'GET', response: 'raw' })
         headers: { 'Content-Type': 'application/json' },
       })
     }
-  })
+  }) 

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { PlusCircle, Trash2 } from 'lucide-react'
-import { useAppState } from '../store/demo.hooks'
+import { useAppState } from '../store/hooks'
 
 interface SettingsDialogProps {
   isOpen: boolean
@@ -145,4 +145,4 @@ export function SettingsDialog({ isOpen, onClose }: SettingsDialogProps) {
       </div>
     </div>
   )
-}
+} 
