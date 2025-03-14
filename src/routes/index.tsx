@@ -216,7 +216,7 @@ function Home() {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant' as const,
-        content: 'Sorry, I encountered an error generating a response.',
+        content: 'Sorry, I encountered an error generating a response. Please set the required API keys in your environment variables.',
       }
       await addMessage(conversationId, errorMessage)
     }
