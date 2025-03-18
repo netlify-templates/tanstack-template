@@ -29,6 +29,9 @@ function Home() {
   // Memoize messages to prevent unnecessary re-renders
   const messages = useMemo(() => currentConversation?.messages || [], [currentConversation]);
 
+  // Check if Anthropic API key is defined
+  const isAnthropicKeyDefined = Boolean(import.meta.env.VITE_ANTHROPIC_API_KEY);
+
   // Local state
   const [input, setInput] = useState('')
   const [editingChatId, setEditingChatId] = useState<string | null>(null)
@@ -255,6 +258,11 @@ function Home() {
 
       {/* Main Content */}
       <div className="flex flex-col flex-1">
+        {!isAnthropicKeyDefined && (
+          <div className="w-full max-w-3xl px-2 py-2 mx-auto mt-4 mb-2 font-medium text-center text-white bg-orange-500 rounded-md">
+            Please add the Anthropic API key!
+          </div>
+        )}
         {error && (
           <p className="w-full max-w-3xl p-4 mx-auto font-bold text-orange-500">{error}</p>
         )}
