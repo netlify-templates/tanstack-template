@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lamborghini Sesto Elemento</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #111;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #000;
+            padding: 20px;
+            text-align: center;
+        }
+        header h1 {
+            color: #e60000;
+        }
+        .content {
+            padding: 20px;
+        }
+        img {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        video {
+            width: 100%;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        ul {
+            list-style-type: square;
+            padding-left: 20px;
+        }
+        section {
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Lamborghini Sesto Elemento</h1>
+        <p>La perfección de la fibra de carbono</p>
+    </header>
+
+    <div class="content">
+        <section>
+            <h2>Introducción</h2>
+            <p>El <strong>Lamborghini Sesto Elemento</strong> es un superdeportivo de edición limitada, diseñado para ofrecer un rendimiento extremo con un peso ultraligero.</p>
+        </section>
+
+       <section>
+    <h2>Galería del Lamborghini Sesto Elemento</h2>
+    <table border="1" cellpadding="10" cellspacing="0" style="margin: auto; border-collapse: collapse;">
+        <tr>
+            <td><img src="l1.jpg" alt="Imagen 1" width="300"></td>
+            <td><img src="l2.jpg" alt="Imagen 2" width="300"></td>
+            <td><img src="l3.jpg" alt="Imagen 3" width="300"></td>
+        </tr>
+        <tr>
+            <td><img src="l7.jpg" alt="Imagen 4" width="300"></td>
+            <td><img src="l5.jpg" alt="Imagen 5" width="300"></td>
+            <td><img src="l6.jpg" alt="Imagen 6" width="300"></td>
+        </tr>
+    </table>
+</section>
+
+        <section>
+            <h2>Video en acción</h2>
+            <iframe src="https://www.youtube.com/watch?v=TzIsFBQqiH4" allowfullscreen></iframe>
+
+
+ <p>Nota: Este video es del Lamborghini Sesto Elemento en funcion.</p>
+        </section>
+
+        <section>
+            <h2>Características principales</h2>
+            <ul>
+                <li>Motor V10 de 5.2 litros</li>
+                <li>570 caballos de fuerza</li>
+                <li>0 a 100 km/h en solo 2.5 segundos</li>
+                <li>Uso extensivo de fibra de carbono</li>
+                <li>Peso total: solo 999 kg</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Exclusividad</h2>
+            <p>El Sesto Elemento es extremadamente exclusivo. <strong>Solo se fabricaron 20 unidades en todo el mundo</strong>, y todas fueron destinadas a uso en pista, no homologadas para la carretera.</p>
+            <p> Con esta edición especial limitada, Automobili Lamborghini ha redefinido el futuro de los superdeportivos.
+Sesto Elemento es una obra maestra de ingeniería ligera y demuestra la gran experiencia de Lamborghini en todos los ámbitos de la tecnología de la fibra de carbono.
+Con una estructura extremadamente ligera, gracias al empleo de la tecnología avanzada de la fibra de carbono, el Lamborghini Sesto Elemento pesa en vacío solo 999 kilogramos (2.202 lbs), incluidos el motor V10 y el sistema de tracción integral permanente. Con una relación peso-potencia sensacional, tan solo 1,75 Kg/CV, este superdeportivo en edición limitada ofrece prestaciones sin igual: de 0 a 100 km/h en un tiempo récord de 2,5 segundos.</p>
+        </section>
+   <table border="1" cellpadding="10" cellspacing="0" style="margin: auto; border-collapse: collapse;">
+        <tr>
+            <td><img src="ll1.webp" alt="Imagen 1" width="300"></td>
+            <td><img src="ll2.webp" alt="Imagen 2" width="300"></td
+        </tr>
+    </div>
+
+</body>
+</html>
