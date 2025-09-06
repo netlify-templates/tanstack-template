@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mapa Jerárquico Interactivo - Normatividad Educativa (Colombia)</title>
+  <style>
+    body{font-family:system-ui,Arial;margin:20px;background:#f7f9fc;color:#0b1b2b}
+    .tree{max-width:980px;margin:0 auto}
+    .node{background:#fff;border-radius:12px;padding:12px 16px;margin:8px 0;box-shadow:0 6px 18px rgba(11,27,43,0.08);transition:all .2s ease}
+    .node .header{display:flex;justify-content:space-between;align-items:center}
+    .badge{font-weight:700;padding:6px 10px;border-radius:999px;background:#eef6ff}
+    .meta{font-size:0.9rem;color:#274060;margin-top:8px}
+    details summary{cursor:pointer;outline:none}
+    summary::-webkit-details-marker{display:none}
+    .summary-row{display:flex;gap:12px;align-items:center}
+    .level{font-size:0.85rem;padding:4px 8px;border-radius:8px;color:#fff}
+    .level.internacional{background:#0077b6}
+    .level.nacional{background:#0096c7}
+    .level.regional{background:#00b4d8}
+    .level.institucional{background:#48cae4;color:#0b1b2b}
+    .col{display:flex;gap:12px;flex-wrap:wrap}
+    .small{font-size:0.88rem;color:#385168}
+    .search{margin-bottom:12px}
+    .search input{width:100%;padding:10px;border-radius:10px;border:1px solid #d7e2ee}
+    .hint{font-size:0.85rem;color:#48607a;margin-top:8px}
+    .legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .legend div{padding:6px 10px;border-radius:8px;background:#fff}
+    a.src{color:#0b66ff;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="tree" role="tree" aria-label="Mapa jerárquico de normatividad educativa en Colombia">
+    <h1>Mapa jerárquico interactivo — Normatividad Educativa (Colombia)</h1>
+    <p class="hint">Haga clic en cada categoría para desplegar normas. Use el buscador para localizar palabras clave (ej. "Ley 115", "Decreto 1075").</p>
+
+    <div class="search"><input id="q" placeholder="Buscar norma, palabra clave o nivel..." oninput="filter()"></div>
+
+    <!-- INTERNACIONAL -->
+    <details open class="node" id="internacional" role="treeitem">
+      <summary>
+        <div class="summary-row">
+          <span class="level internacional">Internacional</span>
+          <span class="badge">Tratados y estándares</span>
+        </div>
+      </summary>
+      <div class="meta">
+        <div class="col">
+          <details class="node" id="udhr" role="treeitem"><summary><div class="summary-row"><strong>Declaración Universal de Derechos Humanos (1948)</strong> <span class="small">(Declaración)</span></div></summary>
+            <div class="meta"><strong>Objeto:</strong> Reconocer el derecho a la educación como derecho humano (Art. 26).<br><strong>Contexto:</strong> Marco general para políticas públicas y normas nacionales.</div>
+          </details>
+
+          <details class="node" id="icescr" role="treeitem"><summary><div class="summary-row"><strong>Pacto Internacional de Derechos Económicos, Sociales y Culturales (ICESCR)</strong></div></summary>
+            <div class="meta"><strong>Objeto:</strong> Garantizar el derecho a la educación progresiva y obligatoria.<br><strong>Contexto:</strong> Vincula a Colombia a asegurar disponibilidad y calidad educativa.</div>
+          </details>
+
+          <details class="node" id="crc" role="treeitem"><summary><div class="summary-row"><strong>Convención sobre los Derechos del Niño (CRC)</strong></div></summary>
+            <div class="meta"><strong>Objeto:</strong> Protección integral de derechos de niños y niñas.<br><strong>Contexto:</strong> Orienta políticas y prácticas educativas con enfoque de derechos.</div>
+          </details>
+
+          <details class="node" id="sdg4" role="treeitem"><summary><div class="summary-row"><strong>ODS 4 - Educación de calidad (Agenda 2030)</strong></div></summary>
+            <div class="meta"><strong>Objeto:</strong> Educación inclusiva, equitativa y de calidad.<br><strong>Contexto:</strong> Marco de políticas públicas nacionales y territoriales.</div>
+          </details>
+        </div>
+      </div>
+    </details>
+
+    <!-- NACIONAL -->
+    <details class="node" open id="nacional" role="treeitem">
+      <summary>
+        <div class="summary-row">
+          <span class="level nacional">Nacional</span>
+          <span class="badge">Constitución, Leyes, Decretos</span>
+        </div>
+      </summary>
+      <div class="meta">
+        <details class="node" id="constitucion"><summary><div class="summary-row"><strong>Constitución Política de Colombia (1991)</strong></div></summary>
+          <div class="meta"><strong>Objeto:</strong> Norma suprema; garantiza el derecho a la educación (Art. 67).<br><strong>Contexto:</strong> Fuente principal de validez normativa.</div>
+        </details>
+
+        <details class="node" id="ley115"><summary><div class="summary-row"><strong>Ley 115 de 1994 - Ley General de Educación</strong></div></summary>
+          <div class="meta"><strong>Objeto:</strong> Organizar el servicio público educativo.<br><strong>Contexto:</strong> Marco general para educación preescolar, básica y media.</div>
+        </details>
+
+        <details class="node" id="decreto1075"><summary><div class="summary-row"><strong>Decreto 1075 de 2015</strong></div></summary>
+          <div class="meta"><strong>Objeto:</strong> Compilar y unificar reglamentación del sector educativo.<br><strong>Contexto:</strong> Define competencias y procedimientos administrativos.</div>
+        </details>
+
+        <details class="node" id="decreto2269"><summary><div class="summary-row"><strong>Decreto 2269 de 2023</strong></div></summary>
+          <div class="meta"><strong>Objeto:</strong> Adopta la estructura del MEN.<br><strong>Contexto:</strong> Define funciones administrativas.</div>
+        </details>
+      </div>
+    </details>
+
+    <!-- REGIONAL -->
+    <details class="node" id="regional" role="treeitem">
+      <summary>
+        <div class="summary-row">
+          <span class="level regional">Regional / Territorial</span>
+          <span class="badge">Ordenanzas, Decretos locales</span>
+        </div>
+      </summary>
+      <div class="meta">
+        <p>Ejemplo: Ordenanza 027 de 2021 (Santander) sobre gratuidad educativa; Decretos municipales para jornada única o alimentación escolar.</p>
+      </div>
+    </details>
+
+    <!-- INSTITUCIONAL -->
+    <details class="node" id="institucional" role="treeitem">
+      <summary>
+        <div class="summary-row">
+          <span class="level institucional">Institucional</span>
+          <span class="badge">PEI, Manual de Convivencia</span>
+        </div>
+      </summary>
+      <div class="meta">
+        <p><strong>PEI:</strong> Define identidad y líneas pedagógicas.<br>
+        <strong>Manual de Convivencia:</strong> Regula la vida escolar.<br>
+        <strong>Contexto:</strong> Normas internas subordinadas a las superiores.</p>
+      </div>
+    </details>
+
+    <div class="legend">
+      <div><strong>Fuentes:</strong> MEN (Normatividad), Ley 115/1994, Decreto 1075/2015, Decreto 2269/2023, tratados internacionales.</div>
+    </div>
+  </div>
+
+  <script>
+    function filter(){
+      const q = document.getElementById('q').value.toLowerCase();
+      document.querySelectorAll('.node').forEach(n=>{
+        const txt = n.innerText.toLowerCase();
+        if(q==='' || txt.includes(q)){
+          n.style.display='block';
+          let parent = n.parentElement.closest('.node');
+          while(parent){
+            parent.style.display='block';
+            parent.open = true;
+            parent = parent.parentElement.closest('.node');
+          }
+        } else {
+          n.style.display='none';
+        }
+      })
+    }
+  </script>
+</body>
+</html>
