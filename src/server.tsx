@@ -1,11 +1,10 @@
 import {
   createStartHandler,
   defaultStreamHandler,
-} from '@tanstack/react-start/server'
-import { getRouterManifest } from '@tanstack/react-start/router-manifest'
+} from "@tanstack/react-start/server";
 import * as Sentry from '@sentry/react'
 
-import { createRouter } from './router'
+import { createRouter } from "./router";
 import { initSentry } from './sentry'
 
 // Initialize Sentry in SSR context (will be skipped if DSN is not defined)
@@ -17,7 +16,7 @@ let streamHandler = defaultStreamHandler;
 // Only wrap with Sentry if DSN is available
 if (process.env.SENTRY_DSN) {
   const originalHandler = defaultStreamHandler;
-  
+
   streamHandler = async (options) => {
     try {
       return await originalHandler(options);
@@ -30,5 +29,4 @@ if (process.env.SENTRY_DSN) {
 
 export default createStartHandler({
   createRouter,
-  getRouterManifest,
-})(streamHandler)
+})(streamHandler);

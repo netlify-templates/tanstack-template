@@ -1,2 +1,9 @@
+[build]
+  command = "vite build"
+  publish = "dist"
+[dev]
+  command = "vite dev"
+  targetPort = 3000
+
 [template.environment]
 VITE_ANTHROPIC_API_KEY="Add your Anthropic API key here"

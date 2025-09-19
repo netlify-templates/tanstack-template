@@ -2,12 +2,18 @@ import { defineConfig } from "vite";
 import viteReact from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
-
-import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
+import viteTsConfigPaths from "vite-tsconfig-paths";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 
 const basePlugins = [
-  TanStackRouterVite({ autoCodeSplitting: true }), 
-  viteReact(), 
+  viteTsConfigPaths({
+    projects: ["./tsconfig.json"],
+  }),
+  tanstackStart({
+    customViteReactPlugin: true,
+    target: "netlify",
+  }),
+  viteReact(),
   tailwindcss(),
 ];
 
@@ -18,15 +24,21 @@ if (process.env.SENTRY_AUTH_TOKEN) {
       org: "org-name",
       project: "project-name",
       authToken: process.env.SENTRY_AUTH_TOKEN,
-    })
+    }),
   );
 }
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  server: {
+    port: 3000,
+  },
   plugins: basePlugins,
   build: {
     // Only generate source maps if Sentry is enabled
     sourcemap: !!process.env.SENTRY_AUTH_TOKEN,
+  },
+  ssr: {
+    noExternal: ["lucide-react"],
   },
 });
