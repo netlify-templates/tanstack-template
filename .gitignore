@@ -1,8 +1,9 @@
 node_modules
 .DS_Store
 dist
-dist-ssr
 *.local
-.vinxi
+.nitro
+.output
 .netlify
 .env
+.tanstack
