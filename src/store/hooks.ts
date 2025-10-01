@@ -16,13 +16,15 @@ export function useAppState() {
   const conversations = useStore(store, s => selectors.getConversations(s));
   const currentConversationId = useStore(store, s => selectors.getCurrentConversationId(s));
   const prompts = useStore(store, s => selectors.getPrompts(s));
-  
+  const isBannerVisible = useStore(store, s => selectors.getIsBannerVisible(s));
+
   return {
     conversations,
     currentConversationId,
     isLoading,
     prompts,
-    
+    isBannerVisible,
+
     // Actions
     setCurrentConversationId: actions.setCurrentConversationId,
     addConversation: actions.addConversation,
@@ -30,10 +32,11 @@ export function useAppState() {
     updateConversationTitle: actions.updateConversationTitle,
     addMessage: actions.addMessage,
     setLoading: actions.setLoading,
+    setBannerVisible: actions.setBannerVisible,
     createPrompt: actions.createPrompt,
     deletePrompt: actions.deletePrompt,
     setPromptActive: actions.setPromptActive,
-    
+
     // Selectors
     getCurrentConversation: selectors.getCurrentConversation,
     getActivePrompt: selectors.getActivePrompt,

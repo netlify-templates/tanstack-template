@@ -8,7 +8,7 @@ A modern chat template built with TanStack Router and Claude AI integration feat
 
 ## Table of Contents
 - [Deploy to Netlify](#deploy-to-netlify)
-- [Features](#-features)
+- [Features](#features)
   - [AI Capabilities](#ai-capabilities)
   - [User Experience](#user-experience)
 - [Project Structure](#project-structure)
@@ -25,6 +25,9 @@ A modern chat template built with TanStack Router and Claude AI integration feat
 - [Error Monitoring](#error-monitoring)
 - [Environment Configuration](#environment-configuration)
   - [Anthropic API Key](#anthropic-api-key)
+    - [For Local Development](#for-local-development)
+    - [For Netlify Deployment with AI Gateway](#for-netlify-deployment-with-ai-gateway)
+    - [Using Your Own Anthropic API Key in Production](#using-your-own-anthropic-api-key-in-production)
   - [Convex Configuration (Optional)](#convex-configuration-optional)
 - [Routing](#routing)
   - [Adding A Route](#adding-a-route)
@@ -239,11 +242,31 @@ VITE_ANTHROPIC_API_KEY=your_anthropic_api_key
 ```
 
 #### For Netlify Deployment with AI Gateway
-When deployed to Netlify, the application automatically works with [Netlify AI Gateway](https://docs.netlify.com/platform/ai-gateway/). No additional configuration needed - Netlify AI Gateway will:
-- Automatically provide the `ANTHROPIC_API_KEY` environment variable
-- Intercept and proxy requests to `api.anthropic.com`
 
-Simply deploy to Netlify and the AI Gateway integration will work automatically.
+This template works seamlessly with [Netlify AI Gateway](https://docs.netlify.com/platform/ai-gateway/), which automatically proxies your Anthropic API requests with built-in security, usage analytics, and rate limiting.
+
+**How it works:**
+1. Deploy to Netlify
+2. AI Gateway automatically handles all requests to `api.anthropic.com`
+3. No API key or additional configuration needed
+
+The template works out-of-the-box with Netlify AI Gateway when deployed.
+
+**Learn more:** [Netlify AI Gateway Documentation](https://docs.netlify.com/platform/ai-gateway/)
+
+#### Using Your Own Anthropic API Key in Production
+
+If you prefer to use your own Anthropic API key instead of Netlify AI Gateway:
+
+1. Go to your Netlify site dashboard
+2. Navigate to **Site configuration > Environment variables**
+3. Add your API key:
+   ```
+   VITE_ANTHROPIC_API_KEY=your_anthropic_api_key
+   ```
+4. Redeploy your site
+
+The application will use your API key directly instead of routing through AI Gateway. Note that you'll lose the built-in analytics and rate limiting features that AI Gateway provides.
 
 ### Convex Configuration (Optional)
 

@@ -1,13 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { Settings } from 'lucide-react'
-import { 
-  SettingsDialog, 
-  ChatMessage, 
-  LoadingIndicator, 
-  ChatInput, 
-  Sidebar, 
-  WelcomeScreen 
+import {
+  SettingsDialog,
+  ChatMessage,
+  LoadingIndicator,
+  ChatInput,
+  Sidebar,
+  WelcomeScreen,
+  TopBanner
 } from '../components'
 import { useConversations, useAppState, store, actions } from '../store'
 import { genAIResponse, type Message } from '../utils'
@@ -28,9 +29,6 @@ function Home() {
 
   // Memoize messages to prevent unnecessary re-renders
   const messages = useMemo(() => currentConversation?.messages || [], [currentConversation]);
-
-  // Check if Anthropic API key is defined
-  const isAnthropicKeyDefined = Boolean(import.meta.env.VITE_ANTHROPIC_API_KEY);
 
   // Local state
   const [input, setInput] = useState('')
@@ -324,12 +322,7 @@ function Home() {
 
       {/* Main Content */}
       <div className="flex flex-col flex-1">
-        {!isAnthropicKeyDefined && (
-          <div className="w-full max-w-3xl px-2 py-2 mx-auto mt-4 mb-2 font-medium text-center text-white bg-orange-500 rounded-md text-sm">
-            <p>This app requires an Anthropic API key to work properly. Update your <code>.env</code> file or get a <a href='https://console.anthropic.com/settings/keys' className='underline'>new Anthropic key</a>.</p>
-            <p>For local development, use <a href='https://www.netlify.com/products/dev/' className='underline'>netlify dev</a> to automatically load environment variables.</p>
-          </div>
-        )}
+        <TopBanner />
         {error && (
           <p className="w-full max-w-3xl p-4 mx-auto font-bold text-orange-500">{error}</p>
         )}
