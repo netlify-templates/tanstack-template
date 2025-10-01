@@ -27,10 +27,21 @@ code {
 ::-webkit-scrollbar-thumb {
   background-color: rgba(156, 163, 175, 0.5);
   border-radius: 4px;
+  transition: background-color 0.2s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background-color: rgba(156, 163, 175, 0.7);
+}
+
+/* Smooth scrolling behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Messages container specific smooth scroll */
+.messages-container {
+  scroll-behavior: smooth;
 }
 
 /* Smooth transitions for dark mode */
@@ -148,6 +159,41 @@ html {
 .message-exit-active {
   opacity: 0;
   transition: opacity 300ms;
+}
+
+/* Smooth streaming animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.streaming-message {
+  animation: fadeIn 0.15s ease-in;
+}
+
+/* Cursor animation for streaming text - smooth pulse like ChatGPT */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scaleY(0.95);
+  }
+}
+
+.streaming-cursor::after {
+  content: '▋';
+  animation: pulse 1.5s ease-in-out infinite;
+  margin-left: 2px;
+  color: #f97316;
+  display: inline-block;
+  transform-origin: center;
 }
 
 /* Add/update these styles to match AI formatting capabilities */

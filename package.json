@@ -9,7 +9,7 @@
     "dev": "vinxi dev"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.39.0",
+    "@anthropic-ai/sdk": "^0.65.0",
     "@sentry/react": "^9.5.0",
     "@sentry/vite-plugin": "^3.2.2",
     "@tailwindcss/postcss": "^4.0.7",

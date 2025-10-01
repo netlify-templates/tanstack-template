@@ -60,6 +60,8 @@ export const genAIResponse = createServerFn({ method: 'GET', response: 'raw' })
   // .middleware([loggingMiddleware])
   .handler(async ({ data }) => {
     // Check for API key in environment variables
+    // Netlify AI Gateway provides ANTHROPIC_API_KEY (without VITE_ prefix)
+    // Fall back to VITE_ANTHROPIC_API_KEY for local development
     const apiKey = process.env.ANTHROPIC_API_KEY || import.meta.env.VITE_ANTHROPIC_API_KEY
 
     if (!apiKey) {
@@ -67,8 +69,9 @@ export const genAIResponse = createServerFn({ method: 'GET', response: 'raw' })
         'Missing API key: Please set VITE_ANTHROPIC_API_KEY in your environment variables or VITE_ANTHROPIC_API_KEY in your .env file.'
       )
     }
-    
+
     // Create Anthropic client with proper configuration
+    // Don't set baseURL - Netlify AI Gateway will intercept requests to api.anthropic.com automatically
     const anthropic = new Anthropic({
       apiKey,
       // Add proper timeout to avoid connection issues
@@ -106,14 +109,47 @@ export const genAIResponse = createServerFn({ method: 'GET', response: 'raw' })
     })
 
     try {
-      const response = await anthropic.messages.stream({
-        model: 'claude-3-5-sonnet-20241022',
+      const stream = await anthropic.messages.stream({
+        model: 'claude-sonnet-4-5-20250929',
         max_tokens: 4096,
         system: systemPrompt,
         messages: formattedMessages,
       })
 
-      return new Response(response.toReadableStream())
+      // Transform the Anthropic stream to match the expected client format
+      // The client reads chunks and expects each chunk to contain one complete JSON object
+      const encoder = new TextEncoder()
+      const transformedStream = new ReadableStream({
+        async start(controller) {
+          try {
+            for await (const event of stream) {
+              // Only send content_block_delta events with text
+              if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+                const chunk = {
+                  type: 'content_block_delta',
+                  delta: {
+                    type: 'text_delta',
+                    text: event.delta.text,
+                  },
+                }
+                // Encode each JSON object as a separate chunk
+                // This ensures the decoder can parse each chunk independently
+                controller.enqueue(encoder.encode(JSON.stringify(chunk) + '\n'))
+              }
+            }
+            controller.close()
+          } catch (error) {
+            console.error('Stream error:', error)
+            controller.error(error)
+          }
+        },
+      })
+
+      return new Response(transformedStream, {
+        headers: {
+          'Content-Type': 'application/x-ndjson',
+        },
+      })
     } catch (error) {
       console.error('Error in genAIResponse:', error)
       

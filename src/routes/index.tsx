@@ -1,13 +1,14 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react'
 import { Settings } from 'lucide-react'
-import { 
-  SettingsDialog, 
-  ChatMessage, 
-  LoadingIndicator, 
-  ChatInput, 
-  Sidebar, 
-  WelcomeScreen 
+import {
+  SettingsDialog,
+  ChatMessage,
+  LoadingIndicator,
+  ChatInput,
+  Sidebar,
+  WelcomeScreen,
+  TopBanner
 } from '../components'
 import { useConversations, useAppState, store, actions } from '../store'
 import { genAIResponse, type Message } from '../utils'
@@ -29,9 +30,6 @@ function Home() {
   // Memoize messages to prevent unnecessary re-renders
   const messages = useMemo(() => currentConversation?.messages || [], [currentConversation]);
 
-  // Check if Anthropic API key is defined
-  const isAnthropicKeyDefined = Boolean(import.meta.env.VITE_ANTHROPIC_API_KEY);
-
   // Local state
   const [input, setInput] = useState('')
   const [editingChatId, setEditingChatId] = useState<string | null>(null)
@@ -41,17 +39,26 @@ function Home() {
   const [pendingMessage, setPendingMessage] = useState<Message | null>(null)
   const [error, setError] = useState<string | null>(null);
 
-  const scrollToBottom = useCallback(() => {
+  const scrollToBottom = useCallback((smooth: boolean = false) => {
     if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop =
-        messagesContainerRef.current.scrollHeight
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: smooth ? 'smooth' : 'auto'
+      })
     }
   }, []);
 
   // Scroll to bottom when messages change or loading state changes
   useEffect(() => {
-    scrollToBottom()
-  }, [messages, isLoading, scrollToBottom])
+    scrollToBottom(false)
+  }, [messages, scrollToBottom])
+
+  // Smooth scroll during streaming
+  useEffect(() => {
+    if (pendingMessage && isLoading) {
+      scrollToBottom(true)
+    }
+  }, [pendingMessage, isLoading, scrollToBottom])
 
   const createTitleFromInput = useCallback((text: string) => {
     const words = text.trim().split(/\s+/)
@@ -93,23 +100,80 @@ function Home() {
         role: 'assistant' as const,
         content: '',
       }
+      let buffer = '' // Buffer to accumulate partial JSON chunks
+      let pendingTextQueue: string[] = [] // Queue of text chunks to render
+      let isRendering = false
+
+      // Smooth character-by-character rendering with adaptive speed
+      const renderTextSmoothly = async () => {
+        if (isRendering) return
+        isRendering = true
+
+        while (pendingTextQueue.length > 0) {
+          const chunk = pendingTextQueue.shift()!
+
+          // Adaptive rendering: faster for code blocks, smoother for regular text
+          const isCodeBlock = newMessage.content.includes('```') &&
+                             newMessage.content.split('```').length % 2 === 0
+
+          // Characters per frame and delay based on content type
+          const charsPerFrame = isCodeBlock ? 5 : 2 // Faster for code
+          const delay = isCodeBlock ? 2 : 5 // Shorter delay for code
+
+          for (let i = 0; i < chunk.length; i += charsPerFrame) {
+            const slice = chunk.slice(i, i + charsPerFrame)
+            newMessage = {
+              ...newMessage,
+              content: newMessage.content + slice,
+            }
+            setPendingMessage({ ...newMessage })
+
+            // Dynamic delay for natural typing rhythm
+            // ~200-400 chars per second for text, ~500 chars per second for code
+            await new Promise(resolve => setTimeout(resolve, delay))
+          }
+        }
+
+        isRendering = false
+      }
+
+      const scheduleUIUpdate = (text: string) => {
+        pendingTextQueue.push(text)
+        renderTextSmoothly()
+      }
+
       while (!done) {
         const out = await reader.read()
         done = out.done
-        if (!done) {
-          try {
-            const json = JSON.parse(decoder.decode(out.value))
-            if (json.type === 'content_block_delta') {
-              newMessage = {
-                ...newMessage,
-                content: newMessage.content + json.delta.text,
+        if (!done && out.value) {
+          // Decode the chunk and add to buffer
+          buffer += decoder.decode(out.value, { stream: true })
+
+          // Split by newlines to get complete JSON objects
+          const lines = buffer.split('\n')
+
+          // Keep the last incomplete line in the buffer
+          buffer = lines.pop() || ''
+
+          // Process each complete line
+          for (const line of lines) {
+            if (line.trim()) {
+              try {
+                const json = JSON.parse(line)
+                if (json.type === 'content_block_delta' && json.delta?.text) {
+                  scheduleUIUpdate(json.delta.text)
+                }
+              } catch (e) {
+                console.error('Error parsing streaming response:', e, 'Line:', line)
               }
-              setPendingMessage(newMessage)
             }
-          } catch (e) {
-            console.error('Error parsing streaming response:', e)
           }
         }
+      }
+
+      // Wait for any remaining text to finish rendering
+      while (pendingTextQueue.length > 0 || isRendering) {
+        await new Promise(resolve => setTimeout(resolve, 50))
       }
 
       setPendingMessage(null)
@@ -258,12 +322,7 @@ function Home() {
 
       {/* Main Content */}
       <div className="flex flex-col flex-1">
-        {!isAnthropicKeyDefined && (
-          <div className="w-full max-w-3xl px-2 py-2 mx-auto mt-4 mb-2 font-medium text-center text-white bg-orange-500 rounded-md text-sm">
-            <p>This app requires an Anthropic API key to work properly. Update your <code>.env</code> file or get a <a href='https://console.anthropic.com/settings/keys' className='underline'>new Anthropic key</a>.</p>
-            <p>For local development, use <a href='https://www.netlify.com/products/dev/' className='underline'>netlify dev</a> to automatically load environment variables.</p>
-          </div>
-        )}
+        <TopBanner />
         {error && (
           <p className="w-full max-w-3xl p-4 mx-auto font-bold text-orange-500">{error}</p>
         )}
@@ -272,13 +331,17 @@ function Home() {
             {/* Messages */}
             <div
               ref={messagesContainerRef}
-              className="flex-1 pb-24 overflow-y-auto"
+              className="flex-1 pb-24 overflow-y-auto messages-container"
             >
               <div className="w-full max-w-3xl px-4 mx-auto">
                 {[...messages, pendingMessage]
                   .filter((message): message is Message => message !== null)
                   .map((message) => (
-                    <ChatMessage key={message.id} message={message} />
+                    <ChatMessage
+                      key={message.id}
+                      message={message}
+                      isStreaming={message === pendingMessage && isLoading}
+                    />
                   ))}
                 {isLoading && <LoadingIndicator />}
               </div>

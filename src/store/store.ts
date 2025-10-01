@@ -21,13 +21,15 @@ export interface State {
   conversations: Conversation[]
   currentConversationId: string | null
   isLoading: boolean
+  isBannerVisible: boolean
 }
 
 const initialState: State = {
   prompts: [],
   conversations: [],
   currentConversationId: null,
-  isLoading: false
+  isLoading: false,
+  isBannerVisible: true
 }
 
 export const store = new Store<State>(initialState)
@@ -140,16 +142,21 @@ export const actions = {
 
   setLoading: (isLoading: boolean) => {
     store.setState(state => ({ ...state, isLoading }))
+  },
+
+  setBannerVisible: (isBannerVisible: boolean) => {
+    store.setState(state => ({ ...state, isBannerVisible }))
   }
 }
 
 // Selectors
 export const selectors = {
   getActivePrompt: (state: State) => state.prompts.find(p => p.is_active),
-  getCurrentConversation: (state: State) => 
+  getCurrentConversation: (state: State) =>
     state.conversations.find(c => c.id === state.currentConversationId),
   getPrompts: (state: State) => state.prompts,
   getConversations: (state: State) => state.conversations,
   getCurrentConversationId: (state: State) => state.currentConversationId,
-  getIsLoading: (state: State) => state.isLoading
+  getIsLoading: (state: State) => state.isLoading,
+  getIsBannerVisible: (state: State) => state.isBannerVisible
 } 
