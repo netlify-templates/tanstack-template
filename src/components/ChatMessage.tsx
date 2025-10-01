@@ -4,9 +4,14 @@ import rehypeSanitize from 'rehype-sanitize'
 import rehypeHighlight from 'rehype-highlight'
 import type { Message } from '../utils/ai'
 
-export const ChatMessage = ({ message }: { message: Message }) => (
+interface ChatMessageProps {
+  message: Message
+  isStreaming?: boolean
+}
+
+export const ChatMessage = ({ message, isStreaming = false }: ChatMessageProps) => (
   <div
-    className={`py-6 ${
+    className={`py-6 streaming-message ${
       message.role === 'assistant'
         ? 'bg-gradient-to-r from-orange-500/5 to-red-600/5'
         : 'bg-transparent'
@@ -22,7 +27,7 @@ export const ChatMessage = ({ message }: { message: Message }) => (
           Y
         </div>
       )}
-      <div className="flex-1 min-w-0 mr-4">
+      <div className={`flex-1 min-w-0 mr-4 ${isStreaming ? 'streaming-cursor' : ''}`}>
         <ReactMarkdown
           className="prose dark:prose-invert max-w-none"
           rehypePlugins={[

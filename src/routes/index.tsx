@@ -41,17 +41,26 @@ function Home() {
   const [pendingMessage, setPendingMessage] = useState<Message | null>(null)
   const [error, setError] = useState<string | null>(null);
 
-  const scrollToBottom = useCallback(() => {
+  const scrollToBottom = useCallback((smooth: boolean = false) => {
     if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop =
-        messagesContainerRef.current.scrollHeight
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: smooth ? 'smooth' : 'auto'
+      })
     }
   }, []);
 
   // Scroll to bottom when messages change or loading state changes
   useEffect(() => {
-    scrollToBottom()
-  }, [messages, isLoading, scrollToBottom])
+    scrollToBottom(false)
+  }, [messages, scrollToBottom])
+
+  // Smooth scroll during streaming
+  useEffect(() => {
+    if (pendingMessage && isLoading) {
+      scrollToBottom(true)
+    }
+  }, [pendingMessage, isLoading, scrollToBottom])
 
   const createTitleFromInput = useCallback((text: string) => {
     const words = text.trim().split(/\s+/)
@@ -94,6 +103,46 @@ function Home() {
         content: '',
       }
       let buffer = '' // Buffer to accumulate partial JSON chunks
+      let pendingTextQueue: string[] = [] // Queue of text chunks to render
+      let isRendering = false
+
+      // Smooth character-by-character rendering with adaptive speed
+      const renderTextSmoothly = async () => {
+        if (isRendering) return
+        isRendering = true
+
+        while (pendingTextQueue.length > 0) {
+          const chunk = pendingTextQueue.shift()!
+
+          // Adaptive rendering: faster for code blocks, smoother for regular text
+          const isCodeBlock = newMessage.content.includes('```') &&
+                             newMessage.content.split('```').length % 2 === 0
+
+          // Characters per frame and delay based on content type
+          const charsPerFrame = isCodeBlock ? 5 : 2 // Faster for code
+          const delay = isCodeBlock ? 2 : 5 // Shorter delay for code
+
+          for (let i = 0; i < chunk.length; i += charsPerFrame) {
+            const slice = chunk.slice(i, i + charsPerFrame)
+            newMessage = {
+              ...newMessage,
+              content: newMessage.content + slice,
+            }
+            setPendingMessage({ ...newMessage })
+
+            // Dynamic delay for natural typing rhythm
+            // ~200-400 chars per second for text, ~500 chars per second for code
+            await new Promise(resolve => setTimeout(resolve, delay))
+          }
+        }
+
+        isRendering = false
+      }
+
+      const scheduleUIUpdate = (text: string) => {
+        pendingTextQueue.push(text)
+        renderTextSmoothly()
+      }
 
       while (!done) {
         const out = await reader.read()
@@ -114,11 +163,7 @@ function Home() {
               try {
                 const json = JSON.parse(line)
                 if (json.type === 'content_block_delta' && json.delta?.text) {
-                  newMessage = {
-                    ...newMessage,
-                    content: newMessage.content + json.delta.text,
-                  }
-                  setPendingMessage(newMessage)
+                  scheduleUIUpdate(json.delta.text)
                 }
               } catch (e) {
                 console.error('Error parsing streaming response:', e, 'Line:', line)
@@ -126,6 +171,11 @@ function Home() {
             }
           }
         }
+      }
+
+      // Wait for any remaining text to finish rendering
+      while (pendingTextQueue.length > 0 || isRendering) {
+        await new Promise(resolve => setTimeout(resolve, 50))
       }
 
       setPendingMessage(null)
@@ -288,13 +338,17 @@ function Home() {
             {/* Messages */}
             <div
               ref={messagesContainerRef}
-              className="flex-1 pb-24 overflow-y-auto"
+              className="flex-1 pb-24 overflow-y-auto messages-container"
             >
               <div className="w-full max-w-3xl px-4 mx-auto">
                 {[...messages, pendingMessage]
                   .filter((message): message is Message => message !== null)
                   .map((message) => (
-                    <ChatMessage key={message.id} message={message} />
+                    <ChatMessage
+                      key={message.id}
+                      message={message}
+                      isStreaming={message === pendingMessage && isLoading}
+                    />
                   ))}
                 {isLoading && <LoadingIndicator />}
               </div>
