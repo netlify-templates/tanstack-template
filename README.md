@@ -232,10 +232,18 @@ If the Sentry environment variables are not defined, the application will run wi
 
 You can generate and manage your Anthropic API keys through the [Anthropic Console](https://console.anthropic.com/login).
 
+#### For Local Development
 ```
 # .env file
 VITE_ANTHROPIC_API_KEY=your_anthropic_api_key
 ```
+
+#### For Netlify Deployment with AI Gateway
+When deployed to Netlify, the application automatically works with [Netlify AI Gateway](https://docs.netlify.com/platform/ai-gateway/). No additional configuration needed - Netlify AI Gateway will:
+- Automatically provide the `ANTHROPIC_API_KEY` environment variable
+- Intercept and proxy requests to `api.anthropic.com`
+
+Simply deploy to Netlify and the AI Gateway integration will work automatically.
 
 ### Convex Configuration (Optional)
 

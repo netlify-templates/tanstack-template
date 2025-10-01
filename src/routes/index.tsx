@@ -93,21 +93,37 @@ function Home() {
         role: 'assistant' as const,
         content: '',
       }
+      let buffer = '' // Buffer to accumulate partial JSON chunks
+
       while (!done) {
         const out = await reader.read()
         done = out.done
-        if (!done) {
-          try {
-            const json = JSON.parse(decoder.decode(out.value))
-            if (json.type === 'content_block_delta') {
-              newMessage = {
-                ...newMessage,
-                content: newMessage.content + json.delta.text,
+        if (!done && out.value) {
+          // Decode the chunk and add to buffer
+          buffer += decoder.decode(out.value, { stream: true })
+
+          // Split by newlines to get complete JSON objects
+          const lines = buffer.split('\n')
+
+          // Keep the last incomplete line in the buffer
+          buffer = lines.pop() || ''
+
+          // Process each complete line
+          for (const line of lines) {
+            if (line.trim()) {
+              try {
+                const json = JSON.parse(line)
+                if (json.type === 'content_block_delta' && json.delta?.text) {
+                  newMessage = {
+                    ...newMessage,
+                    content: newMessage.content + json.delta.text,
+                  }
+                  setPendingMessage(newMessage)
+                }
+              } catch (e) {
+                console.error('Error parsing streaming response:', e, 'Line:', line)
               }
-              setPendingMessage(newMessage)
             }
-          } catch (e) {
-            console.error('Error parsing streaming response:', e)
           }
         }
       }
