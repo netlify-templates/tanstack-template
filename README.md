@@ -243,7 +243,7 @@ VITE_ANTHROPIC_API_KEY=your_anthropic_api_key
 
 #### For Netlify Deployment with AI Gateway
 
-This template works seamlessly with [Netlify AI Gateway](https://docs.netlify.com/platform/ai-gateway/), which automatically proxies your Anthropic API requests with built-in security, usage analytics, and rate limiting.
+This template works seamlessly with [Netlify AI Gateway](https://docs.netlify.com/build/ai-gateway/overview/), which automatically proxies your Anthropic API requests with built-in security, usage analytics, and rate limiting.
 
 **How it works:**
 1. Deploy to Netlify
@@ -252,7 +252,7 @@ This template works seamlessly with [Netlify AI Gateway](https://docs.netlify.co
 
 The template works out-of-the-box with Netlify AI Gateway when deployed.
 
-**Learn more:** [Netlify AI Gateway Documentation](https://docs.netlify.com/platform/ai-gateway/)
+**Learn more:** [Netlify AI Gateway Documentation](https://docs.netlify.com/build/ai-gateway/overview/)
 
 #### Using Your Own Anthropic API Key in Production
 
