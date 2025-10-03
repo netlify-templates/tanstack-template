@@ -22,7 +22,7 @@ export function TopBanner() {
       >
         <X className="w-4 h-4" />
       </button>
-      <p className='px-4'>This app works with <a href='https://docs.netlify.com/build/ai-gateway/overview/' className='underline'>Netlify AI Gateway</a>. If you want to use your Anthropic key, update <a href='https://docs.netlify.com/build/environment-variables/overview/' className='underline'>the environment variables</a> in your project.</p>
+      <p className='px-4'>This app works with <a href='https://docs.netlify.com/build/ai-gateway/overview/' className='underline'>Netlify AI Gateway</a>. If you want to use your own Anthropic key, update <a href='https://docs.netlify.com/build/environment-variables/overview/' className='underline'>the environment variables</a> in your project.</p>
     </div>
   );
 }
