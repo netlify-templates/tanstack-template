@@ -60,13 +60,12 @@ export const genAIResponse = createServerFn({ method: 'GET', response: 'raw' })
   // .middleware([loggingMiddleware])
   .handler(async ({ data }) => {
     // Check for API key in environment variables
-    // Netlify AI Gateway provides ANTHROPIC_API_KEY (without VITE_ prefix)
-    // Fall back to VITE_ANTHROPIC_API_KEY for local development
-    const apiKey = process.env.ANTHROPIC_API_KEY || import.meta.env.VITE_ANTHROPIC_API_KEY
+    // This should ONLY use server-side environment variables (no VITE_ prefix)
+    const apiKey = process.env.ANTHROPIC_API_KEY
 
     if (!apiKey) {
       throw new Error(
-        'Missing API key: Please set VITE_ANTHROPIC_API_KEY in your environment variables or VITE_ANTHROPIC_API_KEY in your .env file.'
+        'Missing API key: Please set ANTHROPIC_API_KEY in your environment variables or .env file.'
       )
     }
 
