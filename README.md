@@ -135,7 +135,7 @@ Follow these steps to set up and run the project locally:
    ```
    
    Then edit the `.env` file with your credentials:
-   - Required: Add your Anthropic API key (`VITE_ANTHROPIC_API_KEY`)
+   - Required: Add your Anthropic API key (`ANTHROPIC_API_KEY`)
    - Optional: Add Convex URL if using database features (`VITE_CONVEX_URL`)
    - Optional: Add Sentry credentials for error monitoring (`VITE_SENTRY_DSN`, `SENTRY_AUTH_TOKEN`)
 
@@ -238,8 +238,10 @@ You can generate and manage your Anthropic API keys through the [Anthropic Conso
 #### For Local Development
 ```
 # .env file
-VITE_ANTHROPIC_API_KEY=your_anthropic_api_key
+ANTHROPIC_API_KEY=your_anthropic_api_key
 ```
+
+**Important:** Use `ANTHROPIC_API_KEY` (without the `VITE_` prefix) to ensure the API key remains server-side only and is not exposed in the client-side bundle.
 
 #### For Netlify Deployment with AI Gateway
 
@@ -262,7 +264,7 @@ If you prefer to use your own Anthropic API key instead of Netlify AI Gateway:
 2. Navigate to **Site configuration > Environment variables**
 3. Add your API key:
    ```
-   VITE_ANTHROPIC_API_KEY=your_anthropic_api_key
+   ANTHROPIC_API_KEY=your_anthropic_api_key
    ```
 4. Redeploy your site
 
