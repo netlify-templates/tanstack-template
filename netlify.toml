@@ -1,2 +1,6 @@
 [template.environment]
-ANTHROPIC_API_KEY="Add your Anthropic API key here"
+ANTHROPIC_API_KEY = "Add your Anthropic API key here"
+
+[build]
+command = "npm run build"
+publish = "dist"
