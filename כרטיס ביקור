@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>עו"ד יוסף פרנקל</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      font-family: "Arial", sans-serif;
+      background: #0f172a;
+      color: #e5e7eb;
+      text-align: center;
+    }
+    .card {
+      max-width: 420px;
+      margin: 20px auto;
+      background: linear-gradient(145deg, #020617, #020617);
+      border: 2px solid #d4af37;
+      border-radius: 16px;
+      padding: 25px 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+    .name {
+      font-size: 26px;
+      font-weight: bold;
+      color: #d4af37;
+      margin-bottom: 5px;
+    }
+    .title {
+      font-size: 15px;
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+      color: #cbd5f5;
+    }
+    .divider {
+      height: 1px;
+      background: #d4af37;
+      margin: 15px 0 20px;
+      opacity: 0.4;
+    }
+    .services {
+      text-align: right;
+      font-size: 16px;
+      line-height: 1.9;
+      margin-bottom: 25px;
+      color: #e5e7eb;
+    }
+    .btn {
+      display: block;
+      padding: 14px;
+      margin: 10px 0;
+      background: #0f172a;
+      color: #d4af37;
+      text-decoration: none;
+      border-radius: 10px;
+      border: 1px solid #d4af37;
+      font-size: 17px;
+      font-weight: bold;
+    }
+    .btn:hover {
+      background: #d4af37;
+      color: #0f172a;
+    }
+    .whatsapp {
+      border-color: #25D366;
+      color: #25D366;
+    }
+    .whatsapp:hover {
+      background: #25D366;
+      color: white;
+    }
+    .phone {
+      font-size: 18px;
+      margin: 15px 0 5px;
+      color: #e5e7eb;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="name">עו"ד יוסף פרנקל</div>
+  <div class="title">משרד עורכי דין</div>
+
+  <div class="divider"></div>
+
+  <div class="services">
+    ▪ קיום צוואות וצווי ירושה<br>
+    ▪ עריכת צוואות<br>
+    ▪ ליווי להוצאת רישיון נשק<br>
+    ▪ מחיקת רישום פלילי
+  </div>
+
+  <div class="phone">📞 050-408-1818</div>
+
+  <a href="tel:0504081818" class="btn">חייג עכשיו</a>
+  <a href="https://wa.me/972504081818" target="_blank" class="btn whatsapp">שלח הודעה בוואטסאפ</a>
+</div>
+
+</body>
+</html>
