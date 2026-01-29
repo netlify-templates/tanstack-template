@@ -51,7 +51,7 @@ Keep responses concise and well-structured. Use appropriate Markdown formatting 
 
 // Non-streaming implementation
 export const genAIResponse = createServerFn({ method: 'GET', response: 'raw' })
-  .validator(
+  .inputValidator(
     (d: {
       messages: Array<Message>
       systemPrompt?: { value: string; enabled: boolean }
