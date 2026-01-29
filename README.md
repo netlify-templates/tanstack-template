@@ -6,6 +6,12 @@ A modern chat template built with TanStack Router and Claude AI integration feat
 
 **⚡ View demo:** [https://tanstack-starter.netlify.app/](https://tanstack-starter.netlify.app/)
 
+**Breaking Changes from Previous Versions:**
+- Migrated from Vinxi to Vite 7+ architecture
+- Updated server function API (`.validator()` → `.inputValidator()`)
+- New router export pattern (`getRouter` instead of `createRouter`)
+- Renamed devtools package (`@tanstack/react-router-devtools`)
+
 ## Table of Contents
 - [Deploy to Netlify](#deploy-to-netlify)
 - [Features](#features)
@@ -63,19 +69,21 @@ Clicking this button will create a new repo for you that looks exactly like this
 
 ### Tech Stack
 - **Frontend Framework**: React 19 with TanStack Start
-- **Routing**: TanStack Router
-- **State Management**: TanStack Store
+- **Routing**: TanStack Router v1.157+
+- **State Management**: TanStack Store v0.8+
 - **Database**: Convex (optional)
 - **Styling**: Tailwind CSS 4
-- **AI Integration**: Anthropic's Claude API
-- **Build Tool**: Vite 6 with Vinxi
+- **AI Integration**: Anthropic's Claude API (Claude Sonnet 4.5)
+- **Build Tool**: Vite 7
 
 ### Prerequisites
 
-- [Node.js](https://nodejs.org/) v20.9+
+- [Node.js](https://nodejs.org/) v22.12.0+ (recommended) or v20.9+ (minimum)
 - (optional) [nvm](https://github.com/nvm-sh/nvm) for Node version management
 - [Anthropic Claude API](https://www.anthropic.com/api)
 - (optional) [Convex Account](https://dashboard.convex.dev/signup) for database storage
+
+> **Note**: TanStack Start v1.157+ is optimized for Node.js v22.12.0+. While it works on v20.9+, upgrading to v22.12.0+ is recommended for the best experience.
 
 ## Project Structure
 
@@ -93,16 +101,15 @@ tanstack-template/
 │   ├── api.ts           # API client configuration
 │   ├── client.tsx       # Client-side entry point
 │   ├── convex.tsx       # Convex client configuration
-│   ├── router.tsx       # Router configuration
+│   ├── router.tsx       # Router configuration (exports getRouter)
 │   ├── sentry.ts        # Sentry error monitoring setup
 │   ├── ssr.tsx          # Server-side rendering setup
 │   └── styles.css       # Global styles
 ├── .env.example         # Example environment variables
-├── app.config.ts        # Application configuration
 ├── package.json         # Project dependencies and scripts
 ├── postcss.config.ts    # PostCSS configuration for Tailwind
 ├── tsconfig.json        # TypeScript configuration
-└── vite.config.js       # Vite bundler configuration
+└── vite.config.js       # Vite configuration with TanStack Start plugin
 ```
 
 ### Key Directories
@@ -176,12 +183,14 @@ You can also use [Netlify Dev](https://www.netlify.com/products/dev/) to run you
 
 ### Troubleshooting
 
-- **Node.js version**: Ensure you're using Node.js v20.9 or higher. You can check your version with `node -v`.
+- **Node.js version**: TanStack Start v1.157+ recommends Node.js v22.12.0+. You can check your version with `node -v`.
   ```bash
-  # Using nvm to install and use the correct Node version
-  nvm install 20.9
-  nvm use 20.9
+  # Using nvm to install and use the recommended Node version
+  nvm install 22
+  nvm use 22
   ```
+
+  The project works with Node.js v20.9+, but upgrading to v22.12.0+ is recommended for optimal performance and compatibility.
 
 - **API Key Issues**: If you encounter errors related to the Anthropic API, verify that your API key is correctly set in the `.env` file and that you have sufficient credits in your Anthropic account.
 
@@ -321,7 +330,7 @@ Here is an example layout that includes a header:
 
 ```tsx
 import { createRootRoute, Outlet } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/router-devtools'
+import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
 import { Link } from "@tanstack/react-router";
 
