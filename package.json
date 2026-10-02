@@ -17,7 +17,7 @@
     "@tanstack/react-router": "^1.157.16",
     "@tanstack/react-router-devtools": "^1.157.16",
     "@tanstack/react-start": "^1.157.16",
-    "@tanstack/react-store": "^0.8.0",
+    "@tanstack/react-store": "^0.11.0",
     "@tanstack/router-plugin": "^1.157.16",
     "@tanstack/store": "^0.8.0",
     "@types/uuid": "^10.0.0",
